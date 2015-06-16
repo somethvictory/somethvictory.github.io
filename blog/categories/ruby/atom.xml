@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ruby | Someth Victory]]></title>
+  <link href="http://somethvictory.github.io/blog/categories/ruby/atom.xml" rel="self"/>
+  <link href="http://somethvictory.github.io/"/>
+  <updated>2015-06-16T21:58:40+07:00</updated>
+  <id>http://somethvictory.github.io/</id>
+  <author>
+    <name><![CDATA[Someth Victory]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Reduce Code Duplication With Metaprogramming]]></title>
+    <link href="http://somethvictory.github.io/blog/2015/06/16/reduce-code-duplication-with-metaprogramming/"/>
+    <updated>2015-06-16T20:53:15+07:00</updated>
+    <id>http://somethvictory.github.io/blog/2015/06/16/reduce-code-duplication-with-metaprogramming</id>
+    <content type="html"><![CDATA[<p>Metaprogramming is a wonderful tool for producing DRY code in highly dynamic languages. It is commonly defined as “code that produces code”.
+<code>ruby Example
+class Domain
+  TYPES = %w(pointed new subdomain)
+end
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>
