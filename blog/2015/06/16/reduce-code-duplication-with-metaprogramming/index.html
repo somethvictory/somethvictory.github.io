@@ -9,7 +9,7 @@
   <meta name="author" content="Someth Victory">
 
   
-  <meta name="description" content="Metaprogramming is a wonderful tool for producing DRY code in highly dynamic languages. It is commonly defined as “code that produces code”. Example1 &hellip;">
+  <meta name="description" content="Metaprogramming is a wonderful tool for producing DRY(Don&rsquo;t Repeat Yourself) code in highly dynamic languages. It is commonly defined as “code &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -84,16 +84,119 @@
   </header>
 
 
-<div class="entry-content"><p>Metaprogramming is a wonderful tool for producing DRY code in highly dynamic languages. It is commonly defined as “code that produces code”.</p>
+<div class="entry-content"><p>Metaprogramming is a wonderful tool for producing DRY(Don&rsquo;t Repeat Yourself) code in highly dynamic languages. It is commonly defined as “code that produces code”. Metaprogramming reduce the amount of unnecesssary code, make your code clean, and DRY, and easy to scale and maintain. Let&rsquo;s take a look at the example below:</p>
 
 <figure class='code'><figcaption><span>Example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Domain</span>
-</span><span class='line'>  <span class="no">TYPES</span> <span class="o">=</span> <span class="sx">%w(pointed new subdomain)</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Domain</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>  <span class="n">validates</span> <span class="ss">:status</span><span class="p">,</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">inclusion</span><span class="p">:</span> <span class="p">{</span> <span class="k">in</span><span class="p">:</span> <span class="sx">%w(pointed new subodmain)</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">pointed</span>
+</span><span class='line'>    <span class="n">where</span><span class="p">(</span><span class="ss">status</span><span class="p">:</span> <span class="s1">&#39;pointed&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">new</span>
+</span><span class='line'>    <span class="n">where</span><span class="p">(</span><span class="ss">status</span><span class="p">:</span> <span class="s1">&#39;new&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">subdomain</span>
+</span><span class='line'>    <span class="n">where</span><span class="p">(</span><span class="ss">status</span><span class="p">:</span> <span class="s1">&#39;subdomain&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">pointed?</span>
+</span><span class='line'>    <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;pointed&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">new?</span>
+</span><span class='line'>    <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;new&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">subdomain?</span>
+</span><span class='line'>    <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;subdomain&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>The example above is obvious that this is a maintenance issue in the making because the code is not DRY, and will take more work in scaling.</p>
+
+<p>Let&rsquo;s say that we want to add another domain status <code>'transferred'</code>, so two methods would need to be created, <code>self.transferred</code> and <code>transferred?</code>.</p>
+
+<p>Now let&rsquo;s see how we could resolve this issue with Metaprogramming, see example below:</p>
+
+<figure class='code'><figcaption><span>Example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Domain</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>  <span class="no">STATUSES</span> <span class="o">=</span> <span class="sx">%w( pointed new subdomain )</span>
+</span><span class='line'>  <span class="n">validates</span> <span class="ss">:status</span><span class="p">,</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">inclusion</span><span class="p">:</span> <span class="p">{</span> <span class="k">in</span><span class="p">:</span> <span class="no">STATUSES</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># create self.pointed, self.new, self.subdomain</span>
+</span><span class='line'>  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>    <span class="no">STATUSES</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">status_name</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">define_method</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">status_name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">where</span><span class="p">(</span><span class="ss">status</span><span class="p">:</span> <span class="n">status_name</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># create pointed?, new?, subdomain?</span>
+</span><span class='line'>  <span class="no">STATUSES</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">status_name</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">define_method</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">status_name</span><span class="si">}</span><span class="s2">?&quot;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">status</span> <span class="o">==</span> <span class="n">status_name</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now the code has been refactorred to use metaprogramming, with <code>define_method</code>. No matter how many domain statuses need to be added, only <code>STATUSES</code> constant needs to be changed, and everything will work normally.</p>
+
+<p>As a clue, when writing code with metaprogramming, some comments about what the code does should be written for a better understanding.</p>
 </div>
 
 
