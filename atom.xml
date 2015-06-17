@@ -4,7 +4,7 @@
   <title><![CDATA[Someth Victory]]></title>
   <link href="http://somethvictory.github.io/atom.xml" rel="self"/>
   <link href="http://somethvictory.github.io/"/>
-  <updated>2015-06-17T21:56:52+07:00</updated>
+  <updated>2015-06-17T22:05:14+07:00</updated>
   <id>http://somethvictory.github.io/</id>
   <author>
     <name><![CDATA[Someth Victory]]></name>
@@ -20,7 +20,7 @@
     <id>http://somethvictory.github.io/blog/2015/06/16/reduce-code-duplication-with-metaprogramming</id>
     <content type="html"><![CDATA[<p>Metaprogramming is a wonderful tool for producing DRY(Don&rsquo;t Repeat Yourself) code in highly dynamic languages. It is commonly defined as “code that produces code”. Metaprogramming reduce the amount of unnecesssary code, make your code clean, and DRY, and easy to scale and maintain. Let&rsquo;s take a look at the example below:</p>
 
-<figure class='code'><figcaption><span>Example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Example 1</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -83,7 +83,7 @@
 
 <p>Now let&rsquo;s see how we could resolve this issue with Metaprogramming, see example below:</p>
 
-<figure class='code'><figcaption><span>Example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Example 2</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -128,7 +128,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Now the code has been refactorred to use metaprogramming, with <code>define_method</code>. No matter how many domain statuses need to be added, only <code>STATUSES</code> constant needs to be changed, and everything will work normally.</p>
+<p>Now the code has been refactorred to use metaprogramming, with <code>define_method</code>. No matter how many domain statuses need to be added, only <code>STATUSES</code> constant needs to be changed, and everything will work normally. The funtionally in Example 2 is working exactly the same as in Example 1. All the methods will be automatically created in runtime.</p>
 
 <p>As a clue, when writing code with metaprogramming, some comments about what the code does should be written for a better understanding.</p>
 ]]></content>
