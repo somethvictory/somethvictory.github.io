@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Oop | Someth Victory]]></title>
   <link href="http://somethvictory.github.io/blog/categories/oop/atom.xml" rel="self"/>
   <link href="http://somethvictory.github.io/"/>
-  <updated>2015-06-25T22:41:52+07:00</updated>
+  <updated>2015-06-25T22:43:24+07:00</updated>
   <id>http://somethvictory.github.io/</id>
   <author>
     <name><![CDATA[Someth Victory]]></name>
@@ -129,6 +129,81 @@ domain.price
 </code></pre>
 
 <p>The code now is much cleaner, maintainable, testable, and scalable.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Reduce Code Duplication With Metaprogramming]]></title>
+    <link href="http://somethvictory.github.io/blog/2015/06/16/reduce-code-duplication-with-metaprogramming/"/>
+    <updated>2015-06-16T20:53:15+07:00</updated>
+    <id>http://somethvictory.github.io/blog/2015/06/16/reduce-code-duplication-with-metaprogramming</id>
+    <content type="html"><![CDATA[<p>Metaprogramming is a wonderful tool for producing DRY(Don&rsquo;t Repeat Yourself) code in highly dynamic languages. It is commonly defined as “code that produces code”. Metaprogramming reduce the amount of unnecesssary code, make your code clean, and DRY, and easy to scale and maintain.</p>
+
+<p>Let&rsquo;s take a look at the example below:</p>
+
+<pre><code class="ruby Without Metaprogramming">class Domain &lt; ActiveRecord::Base
+  validates :status, presence: true, inclusion: { in: %w(pointed new subodmain) }
+
+  def self.pointed
+    where(status: 'pointed')
+  end
+
+  def self.new
+    where(status: 'new')
+  end
+
+  def self.subdomain
+    where(status: 'subdomain')
+  end
+
+  def pointed?
+    status == 'pointed'
+  end
+
+  def new?
+    status == 'new'
+  end
+
+  def subdomain?
+    status == 'subdomain'
+  end
+end
+</code></pre>
+
+<p>The example above is obvious that this is a maintenance issue in the making because the code is not DRY, and will take more work in scaling.</p>
+
+<p>Let&rsquo;s say that we want to add another domain status <code>'transferred'</code>, so two methods would need to be created, <code>self.transferred</code> and <code>transferred?</code>.</p>
+
+<p>Now let&rsquo;s see how we could resolve this issue with Metaprogramming</p>
+
+<p>See example below:</p>
+
+<pre><code class="ruby With Metaprogramming">class Domain &lt; ActiveRecord::Base
+  STATUSES = %w( pointed new subdomain )
+  validates :status, presence: true, inclusion: { in: STATUSES }
+
+  # create self.pointed, self.new, self.subdomain
+  class &lt;&lt; self
+    STATUSES.each do |status_name|
+      define_method "#{status_name}" do
+        where(status: status_name)
+      end
+    end
+  end
+
+  # create pointed?, new?, subdomain?
+  STATUSES.each do |status_name|
+    define_method "#{status_name}?" do
+      status == status_name
+    end
+  end
+
+end
+</code></pre>
+
+<p>Now the code has been refactorred to use metaprogramming, with <code>define_method</code>. No matter how many domain statuses need to be added, only <code>STATUSES</code> constant needs to be changed, and everything will work normally. The funtionally in Example 2 is working exactly the same as in Example 1. All the methods will be automatically created in runtime.</p>
+
+<p>As a clue, when writing code with metaprogramming, some comments about what the code does should be written for a better understanding.</p>
 ]]></content>
   </entry>
   
