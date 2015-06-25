@@ -9,7 +9,8 @@
   <meta name="author" content="Someth Victory">
 
   
-  <meta name="description" content="Metaprogramming is a wonderful tool for producing DRY(Don&rsquo;t Repeat Yourself) code in highly dynamic languages. It is commonly defined as “code &hellip;">
+  <meta name="description" content="A Data Transfer Object(DTO) is an object which is used to encapsulate data. It
+is commonly used in the Services layer which request data from third &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +66,205 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/24/data-transfer-object/">Data Transfer Object in Ruby</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-24T21:17:53+07:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:17 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A Data Transfer Object(DTO) is an object which is used to encapsulate data. It
+is commonly used in the Services layer which request data from third party API
+API, or from the system itself. The benefit of DTOs is to convert the raw data in
+an object and reduce unnecessary information. It also makes a great movel in
+MVC. Moreover, DTO makes the code very easy to maintain and test.</p>
+
+<p>Let&rsquo;s see the example below:</p>
+
+<figure class='code'><figcaption><span>Request data to an API</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="no">API</span><span class="o">::</span><span class="no">Domain</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;some-domain.com&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The response is looked like this:</p>
+
+<figure class='code'><figcaption><span>Response result from an API</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>  <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="s2">&quot;headers&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;Date&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;Fri, 20 Jun 2014 02:41:57 GMT&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;text/json&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;domain&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;some-domain.com&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;price&quot;</span><span class="p">:</span> <span class="s2">&quot;11.00&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;Available&quot;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In order to access the attributes of the response, it will requires to go through all the hierarchy structure:</p>
+
+<figure class='code'><figcaption><span>Access field name of the response</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span><span class='line'><span class="n">result</span><span class="o">[</span><span class="s1">&#39;response&#39;</span><span class="o">][</span><span class="s1">&#39;body&#39;</span><span class="o">][</span><span class="s1">&#39;name&#39;</span><span class="o">]</span>
+</span><span class='line'><span class="c1"># =&gt; &#39;some-domain.com&#39;</span>
+</span><span class='line'><span class="n">result</span><span class="o">[</span><span class="s1">&#39;response&#39;</span><span class="o">][</span><span class="s1">&#39;body&#39;</span><span class="o">][</span><span class="s1">&#39;type&#39;</span><span class="o">]</span>
+</span><span class='line'><span class="c1"># =&gt; &#39;domain&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let&rsquo;s say that we want to check whether or not the domain is available(domain is available only if its status is &lsquo;Available&rsquo; and its price is less than 15)</p>
+
+<p>The code will look like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">result</span><span class="o">[</span><span class="s1">&#39;response&#39;</span><span class="o">][</span><span class="s1">&#39;body&#39;</span><span class="o">][</span><span class="s1">&#39;status&#39;</span><span class="o">]</span> <span class="o">==</span> <span class="s1">&#39;Available&#39;</span> <span class="o">&amp;&amp;</span>
+</span><span class='line'><span class="n">result</span><span class="o">[</span><span class="s1">&#39;response&#39;</span><span class="o">][</span><span class="s1">&#39;body&#39;</span><span class="o">][</span><span class="s1">&#39;price&#39;</span><span class="o">].</span><span class="n">to_f</span> <span class="o">&lt;</span> <span class="mi">15</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, the code above is not really efficient at all, in case of
+readability and scalability.</p>
+
+<p>In addition, what would happen when some fields in the hierarchy structure
+needs to be changed? Let&rsquo;s say field <code>result['response']['body']</code> changed to <code>result['response']['data']</code>. As a result, the code above will be no longer work, so, the code need to be changed everywhere the <code>result</code> object is called.</p>
+
+<p>Now, let&rsquo;s see how DTO could help to solve this problem:</p>
+
+<p>First, create a new class called <code>DTO::Domain</code>. This class is responsible
+for translating the data returned from the API into an object.</p>
+
+<figure class='code'><figcaption><span>DTO::Domain</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">DTO</span><span class="o">::</span><span class="no">Domain</span>
+</span><span class='line'>  <span class="kp">attr_reader</span> <span class="ss">:type</span><span class="p">,</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:price</span><span class="p">,</span> <span class="ss">:status</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@type</span>   <span class="o">=</span> <span class="n">data</span><span class="o">[</span><span class="s1">&#39;body&#39;</span><span class="o">][</span><span class="s1">&#39;type&#39;</span><span class="o">]</span>
+</span><span class='line'>    <span class="vi">@name</span>   <span class="o">=</span> <span class="n">data</span><span class="o">[</span><span class="s1">&#39;body&#39;</span><span class="o">][</span><span class="s1">&#39;name&#39;</span><span class="o">]</span>
+</span><span class='line'>    <span class="vi">@price</span>  <span class="o">=</span> <span class="n">data</span><span class="o">[</span><span class="s1">&#39;body&#39;</span><span class="o">][</span><span class="s1">&#39;price&#39;</span><span class="o">]</span>
+</span><span class='line'>    <span class="vi">@status</span> <span class="o">=</span> <span class="n">data</span><span class="o">[</span><span class="s1">&#39;body&#39;</span><span class="o">][</span><span class="s1">&#39;status&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">available?</span>
+</span><span class='line'>    <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;Available&#39;</span> <span class="o">&amp;&amp;</span> <span class="n">price</span> <span class="o">&lt;</span> <span class="mi">15</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">taken?</span>
+</span><span class='line'>    <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;Taken&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With <code>DTO::Domain</code>, we could instantiate a new object by passing the
+data responded from the API.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span><span class='line'><span class="n">domain</span> <span class="o">=</span> <span class="no">DTO</span><span class="o">::</span><span class="no">Domain</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="s1">&#39;response&#39;</span><span class="o">]</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>All the information responded form the API is encapsulated inside a
+<code>DTO::Domain</code> class. Only needed information with some additional domain logic
+is included in the object. In some case that the field in the API is changed,
+only <code>DTO::Domain</code> class alone needs to be changed.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">domain</span><span class="o">.</span><span class="n">name</span>
+</span><span class='line'><span class="c1"># =&gt; &#39;some-domain.com&#39;</span>
+</span><span class='line'><span class="n">domain</span><span class="o">.</span><span class="n">taken?</span>
+</span><span class='line'><span class="c1"># =&gt; false</span>
+</span><span class='line'><span class="n">domain</span><span class="o">.</span><span class="n">available?</span>
+</span><span class='line'><span class="c1"># =&gt; true</span>
+</span><span class='line'><span class="n">domain</span><span class="o">.</span><span class="n">price</span>
+</span><span class='line'><span class="c1"># =&gt; 11.0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code now is much cleaner, maintainable, testable, and scalable.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -218,6 +418,10 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/06/24/data-transfer-object/">Data Transfer Object in Ruby</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/06/16/reduce-code-duplication-with-metaprogramming/">Reduce Code Duplication With Metaprogramming</a>
