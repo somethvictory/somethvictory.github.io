@@ -94,6 +94,9 @@ API, or from the system itself. The benefit of DTOs is to convert the raw data i
 an object and reduce unnecessary information. It also makes a great movel in
 MVC. Moreover, DTO makes the code very easy to maintain and test.</p>
 
+<p>Given that we are writing some code to perform domain check from thrid party
+API.</p>
+
 <p>Let&rsquo;s see the example below:</p>
 
 <figure class='code'><figcaption><span>Request data to an API</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -148,7 +151,8 @@ MVC. Moreover, DTO makes the code very easy to maintain and test.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>In order to access the attributes of the response, it will requires to go through all the hierarchy structure:</p>
+<p>In order to access the attributes of the response, it will requires to go
+through all the hierarchy key structure:</p>
 
 <figure class='code'><figcaption><span>Access field name of the response</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -163,7 +167,7 @@ MVC. Moreover, DTO makes the code very easy to maintain and test.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Let&rsquo;s say that we want to check whether or not the domain is available(domain is available only if its status is &lsquo;Available&rsquo; and its price is less than 15)</p>
+<p>Let&rsquo;s say that we want to check whether or not the domain is available(domain is available only if its status is &lsquo;Available&rsquo; and price is less than 15)</p>
 
 <p>The code will look like this:</p>
 
@@ -180,7 +184,7 @@ readability and scalability.</p>
 <p>In addition, what would happen when some fields in the hierarchy structure
 needs to be changed? Let&rsquo;s say field <code>result['response']['body']</code> changed to <code>result['response']['data']</code>. As a result, the code above will be no longer work, so, the code need to be changed everywhere the <code>result</code> object is called.</p>
 
-<p>Now, let&rsquo;s see how DTO could help to solve this problem:</p>
+<h3>Perform with DTO</h3>
 
 <p>First, create a new class called <code>DTO::Domain</code>. This class is responsible
 for translating the data returned from the API into an object.</p>
@@ -287,9 +291,11 @@ only <code>DTO::Domain</code> class alone needs to be changed.</p>
   </header>
 
 
-  <div class="entry-content"><p>Metaprogramming is a wonderful tool for producing DRY(Don&rsquo;t Repeat Yourself) code in highly dynamic languages. It is commonly defined as “code that produces code”. Metaprogramming reduce the amount of unnecesssary code, make your code clean, and DRY, and easy to scale and maintain. Let&rsquo;s take a look at the example below:</p>
+  <div class="entry-content"><p>Metaprogramming is a wonderful tool for producing DRY(Don&rsquo;t Repeat Yourself) code in highly dynamic languages. It is commonly defined as “code that produces code”. Metaprogramming reduce the amount of unnecesssary code, make your code clean, and DRY, and easy to scale and maintain.</p>
 
-<figure class='code'><figcaption><span>Example 1</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>Let&rsquo;s take a look at the example below:</p>
+
+<figure class='code'><figcaption><span>Without Metaprogramming</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -350,9 +356,11 @@ only <code>DTO::Domain</code> class alone needs to be changed.</p>
 
 <p>Let&rsquo;s say that we want to add another domain status <code>'transferred'</code>, so two methods would need to be created, <code>self.transferred</code> and <code>transferred?</code>.</p>
 
-<p>Now let&rsquo;s see how we could resolve this issue with Metaprogramming, see example below:</p>
+<p>Now let&rsquo;s see how we could resolve this issue with Metaprogramming</p>
 
-<figure class='code'><figcaption><span>Example 2</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>See example below:</p>
+
+<figure class='code'><figcaption><span>With Metaprogramming</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>

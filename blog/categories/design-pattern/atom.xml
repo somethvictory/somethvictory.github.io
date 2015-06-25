@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Design Pattern | Someth Victory]]></title>
   <link href="http://somethvictory.github.io/blog/categories/design-pattern/atom.xml" rel="self"/>
   <link href="http://somethvictory.github.io/"/>
-  <updated>2015-06-25T22:26:03+07:00</updated>
+  <updated>2015-06-25T22:38:39+07:00</updated>
   <id>http://somethvictory.github.io/</id>
   <author>
     <name><![CDATA[Someth Victory]]></name>
@@ -23,6 +23,9 @@ is commonly used in the Services layer which request data from third party API
 API, or from the system itself. The benefit of DTOs is to convert the raw data in
 an object and reduce unnecessary information. It also makes a great movel in
 MVC. Moreover, DTO makes the code very easy to maintain and test.</p>
+
+<p>Given that we are writing some code to perform domain check from thrid party
+API.</p>
 
 <p>Let&rsquo;s see the example below:</p>
 
@@ -55,7 +58,8 @@ MVC. Moreover, DTO makes the code very easy to maintain and test.</p>
 }
 </code></pre>
 
-<p>In order to access the attributes of the response, it will requires to go through all the hierarchy structure:</p>
+<p>In order to access the attributes of the response, it will requires to go
+through all the hierarchy key structure:</p>
 
 <pre><code class="ruby Access field name of the response">result = JSON.parse(result)
 result['response']['body']['name']
@@ -64,7 +68,7 @@ result['response']['body']['type']
 # =&gt; 'domain'
 </code></pre>
 
-<p>Let&rsquo;s say that we want to check whether or not the domain is available(domain is available only if its status is &lsquo;Available&rsquo; and its price is less than 15)</p>
+<p>Let&rsquo;s say that we want to check whether or not the domain is available(domain is available only if its status is &lsquo;Available&rsquo; and price is less than 15)</p>
 
 <p>The code will look like this:</p>
 
@@ -78,7 +82,7 @@ readability and scalability.</p>
 <p>In addition, what would happen when some fields in the hierarchy structure
 needs to be changed? Let&rsquo;s say field <code>result['response']['body']</code> changed to <code>result['response']['data']</code>. As a result, the code above will be no longer work, so, the code need to be changed everywhere the <code>result</code> object is called.</p>
 
-<p>Now, let&rsquo;s see how DTO could help to solve this problem:</p>
+<h3>Perform with DTO</h3>
 
 <p>First, create a new class called <code>DTO::Domain</code>. This class is responsible
 for translating the data returned from the API into an object.</p>
