@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://somethvictory.github.io/blog/2015/07/01/there-is-no-ternary-syntax-in-coffeescript/</loc>
+    <lastmod>2015-07-01T22:01:56+07:00</lastmod>
+  </url>
+  <url>
     <loc>http://somethvictory.github.io/blog/2015/06/24/data-transfer-object/</loc>
     <lastmod>2015-06-24T21:17:53+07:00</lastmod>
   </url>
@@ -34,5 +38,8 @@
   </url>
   <url>
     <loc>http://somethvictory.github.io/blog/categories/design-pattern/</loc>
+  </url>
+  <url>
+    <loc>http://somethvictory.github.io/blog/categories/coffeescript/</loc>
   </url>
 </urlset>

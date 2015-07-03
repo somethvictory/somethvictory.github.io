@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Coffeescript | Someth Victory]]></title>
+  <link href="http://somethvictory.github.io/blog/categories/coffeescript/atom.xml" rel="self"/>
+  <link href="http://somethvictory.github.io/"/>
+  <updated>2015-07-03T21:53:08+07:00</updated>
+  <id>http://somethvictory.github.io/</id>
+  <author>
+    <name><![CDATA[Someth Victory]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[There Is No Ternary Syntax in CoffeeScript]]></title>
+    <link href="http://somethvictory.github.io/blog/2015/07/01/there-is-no-ternary-syntax-in-coffeescript/"/>
+    <updated>2015-07-01T22:01:56+07:00</updated>
+    <id>http://somethvictory.github.io/blog/2015/07/01/there-is-no-ternary-syntax-in-coffeescript</id>
+    <content type="html"><![CDATA[<p>Ternary operator in CoffeeScript is not behaving as you expected. There is no
+error, but your application will behave with unexpected behavior.</p>
+
+<p>See example below:</p>
+
+<pre><code class="coffeescript Example 1">noNameSet = name ? false : true
+</code></pre>
+
+<p>The <code>hasName</code> variable should return <code>false</code> or <code>true</code> base on whether or not
+variable <code>name</code> exist. And yes, it is like that in pure
+Javascript. But in coffeescript, when writing the code like this, the <code>hasName</code>
+variable will get the value of whatever the <code>name</code> variable is. If the <code>name</code>
+variable stores value of &lsquo;Victory&rsquo;, then the <code>hasName</code> will got the value of
+&lsquo;Victory&rsquo; too, which will lead your application to behave strange in some case.</p>
+
+<p>Fortunately, CoffeeScript has a very nice one line syntax which behaves exactly
+like ternary operator in pure Javascript.</p>
+
+<pre><code class="coffeescript Example 2">noNameSet = if name then true else false
+</code></pre>
+
+<p>Now, <code>noNameSet</code> variable will return <code>false</code> or <code>true</code> base on whether or not
+the <code>name</code> variable has value.</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -9,8 +9,8 @@
   <meta name="author" content="Someth Victory">
 
   
-  <meta name="description" content="A Data Transfer Object(DTO) is an object which is used to encapsulate data. It
-is commonly used in the Services layer which request data from third &hellip;">
+  <meta name="description" content="Ternary operator in CoffeeScript is not behaving as you expected. There is no
+error, but your application will behave with unexpected behavior. See &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +66,61 @@ is commonly used in the Services layer which request data from third &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/01/there-is-no-ternary-syntax-in-coffeescript/">There Is No Ternary Syntax in CoffeeScript</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-01T22:01:56+07:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>10:01 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Ternary operator in CoffeeScript is not behaving as you expected. There is no
+error, but your application will behave with unexpected behavior.</p>
+
+<p>See example below:</p>
+
+<figure class='code'><figcaption><span>Example 1</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nv">noNameSet = </span><span class="nx">name</span> <span class="o">?</span> <span class="kc">false</span> <span class="o">:</span> <span class="kc">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>hasName</code> variable should return <code>false</code> or <code>true</code> base on whether or not
+variable <code>name</code> exist. And yes, it is like that in pure
+Javascript. But in coffeescript, when writing the code like this, the <code>hasName</code>
+variable will get the value of whatever the <code>name</code> variable is. If the <code>name</code>
+variable stores value of &lsquo;Victory&rsquo;, then the <code>hasName</code> will got the value of
+&lsquo;Victory&rsquo; too, which will lead your application to behave strange in some case.</p>
+
+<p>Fortunately, CoffeeScript has a very nice one line syntax which behaves exactly
+like ternary operator in pure Javascript.</p>
+
+<figure class='code'><figcaption><span>Example 2</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nv">noNameSet = </span><span class="k">if</span> <span class="nx">name</span> <span class="k">then</span> <span class="kc">true</span> <span class="k">else</span> <span class="kc">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, <code>noNameSet</code> variable will return <code>false</code> or <code>true</code> base on whether or not
+the <code>name</code> variable has value.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -425,6 +480,10 @@ only <code>DTO::Domain</code> class alone needs to be changed.</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/07/01/there-is-no-ternary-syntax-in-coffeescript/">There Is No Ternary Syntax in CoffeeScript</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/06/24/data-transfer-object/">Data Transfer Object in Ruby</a>
