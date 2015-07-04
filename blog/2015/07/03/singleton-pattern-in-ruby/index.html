@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Singleton Pattern in Ruby - Someth Victory</title>
+  <meta name="author" content="Someth Victory">
+
+  
+  <meta name="description" content="Singleton Pattern is a design pattern that allow a class to be instantiated only
+once. The benefit of Singleton is to be ensure that there is only &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://somethvictory.github.io/blog/2015/07/03/singleton-pattern-in-ruby/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Someth Victory" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Someth Victory</a></h1>
+  
+    <h2>Ruby, Rails, and Javascript Developer</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="somethvictory.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Singleton Pattern in Ruby</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-03T21:51:12+07:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>9:51 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Singleton Pattern is a design pattern that allow a class to be instantiated only
+once. The benefit of Singleton is to be ensure that there is only one and the same
+instance of object is called every time. Ruby also support Singleton Pattern.</p>
+
+<p>In order to create a singleton class in Ruby, <code>Singleton</code> module needs to be included.</p>
+
+<p>Check out the code below:</p>
+
+<figure class='code'><figcaption><span>Singleton Example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='Ruby'><span class='line'><span class="k">class</span> <span class="nc">OpenSRSServer</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Singleton</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">connection</span>
+</span><span class='line'>    <span class="vi">@connection</span> <span class="o">||=</span> <span class="no">OpenSRS</span><span class="o">::</span><span class="no">Server</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+</span><span class='line'>      <span class="ss">key</span><span class="p">:</span>      <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;OPENSRS_ACCESS_KEY&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">server</span><span class="p">:</span>   <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;OPENSRS_SERVER&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">username</span><span class="p">:</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;OPENSRS_REG_USERNAME&#39;</span><span class="o">]</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The example above created a ruby singleton class called <code>OpensrsServer</code>, with an instance method called <code>connection</code>. This class is responsible for creating a connection object using <code>OpenSRS</code> gem.</p>
+
+<p>In order to instantiate an object with singleton class in Ruby, we need to use <code>.instance</code> method rather than <code>.new</code>.</p>
+
+<figure class='code'><figcaption><span>Singleton Object</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='Ruby'><span class='line'><span class="n">server</span> <span class="o">=</span> <span class="no">OpenSRSSErver</span><span class="o">.</span><span class="n">instance</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No matter how many time <code>OpenSRSServer.instance</code> get called, the object returned will be the same.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Someth Victory</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-07-03T21:51:12+07:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>9:51 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/design-patter/'>design patter</a>, <a class='category' href='/blog/categories/oop/'>oop</a>, <a class='category' href='/blog/categories/programming/'>programming</a>, <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>, <a class='category' href='/blog/categories/singleton/'>singleton</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://somethvictory.github.io/blog/2015/07/03/singleton-pattern-in-ruby/" data-via="" data-counturl="http://somethvictory.github.io/blog/2015/07/03/singleton-pattern-in-ruby/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/07/01/there-is-no-ternary-syntax-in-coffeescript/" title="Previous Post: There is no ternary syntax in CoffeeScript">&laquo; There is no ternary syntax in CoffeeScript</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/07/03/singleton-pattern-in-ruby/">Singleton Pattern in Ruby</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/01/there-is-no-ternary-syntax-in-coffeescript/">There Is No Ternary Syntax in CoffeeScript</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/24/data-transfer-object/">Data Transfer Object in Ruby</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/16/reduce-code-duplication-with-metaprogramming/">Reduce Code Duplication With Metaprogramming</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Someth Victory -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

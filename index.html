@@ -9,8 +9,8 @@
   <meta name="author" content="Someth Victory">
 
   
-  <meta name="description" content="Ternary operator in CoffeeScript is not behaving as you expected. There is no
-error, but your application will behave with unexpected behavior. See &hellip;">
+  <meta name="description" content="Singleton Pattern is a design pattern that allow a class to be instantiated only
+once. The benefit of Singleton is to be ensure that there is only &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +66,77 @@ error, but your application will behave with unexpected behavior. See &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/03/singleton-pattern-in-ruby/">Singleton Pattern in Ruby</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-07-03T21:51:12+07:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>9:51 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Singleton Pattern is a design pattern that allow a class to be instantiated only
+once. The benefit of Singleton is to be ensure that there is only one and the same
+instance of object is called every time. Ruby also support Singleton Pattern.</p>
+
+<p>In order to create a singleton class in Ruby, <code>Singleton</code> module needs to be included.</p>
+
+<p>Check out the code below:</p>
+
+<figure class='code'><figcaption><span>Singleton Example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='Ruby'><span class='line'><span class="k">class</span> <span class="nc">OpenSRSServer</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Singleton</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">connection</span>
+</span><span class='line'>    <span class="vi">@connection</span> <span class="o">||=</span> <span class="no">OpenSRS</span><span class="o">::</span><span class="no">Server</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+</span><span class='line'>      <span class="ss">key</span><span class="p">:</span>      <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;OPENSRS_ACCESS_KEY&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">server</span><span class="p">:</span>   <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;OPENSRS_SERVER&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">username</span><span class="p">:</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;OPENSRS_REG_USERNAME&#39;</span><span class="o">]</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The example above created a ruby singleton class called <code>OpensrsServer</code>, with an instance method called <code>connection</code>. This class is responsible for creating a connection object using <code>OpenSRS</code> gem.</p>
+
+<p>In order to instantiate an object with singleton class in Ruby, we need to use <code>.instance</code> method rather than <code>.new</code>.</p>
+
+<figure class='code'><figcaption><span>Singleton Object</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='Ruby'><span class='line'><span class="n">server</span> <span class="o">=</span> <span class="no">OpenSRSSErver</span><span class="o">.</span><span class="n">instance</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No matter how many time <code>OpenSRSServer.instance</code> get called, the object returned will be the same.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -480,6 +551,10 @@ only <code>DTO::Domain</code> class alone needs to be changed.</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/07/03/singleton-pattern-in-ruby/">Singleton Pattern in Ruby</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/07/01/there-is-no-ternary-syntax-in-coffeescript/">There Is No Ternary Syntax in CoffeeScript</a>

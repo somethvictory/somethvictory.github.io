@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Singleton | Someth Victory]]></title>
+  <link href="http://somethvictory.github.io/blog/categories/singleton/atom.xml" rel="self"/>
+  <link href="http://somethvictory.github.io/"/>
+  <updated>2015-07-04T10:38:19+07:00</updated>
+  <id>http://somethvictory.github.io/</id>
+  <author>
+    <name><![CDATA[Someth Victory]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Singleton Pattern in Ruby]]></title>
+    <link href="http://somethvictory.github.io/blog/2015/07/03/singleton-pattern-in-ruby/"/>
+    <updated>2015-07-03T21:51:12+07:00</updated>
+    <id>http://somethvictory.github.io/blog/2015/07/03/singleton-pattern-in-ruby</id>
+    <content type="html"><![CDATA[<p>Singleton Pattern is a design pattern that allow a class to be instantiated only
+once. The benefit of Singleton is to be ensure that there is only one and the same
+instance of object is called every time. Ruby also support Singleton Pattern.</p>
+
+<p>In order to create a singleton class in Ruby, <code>Singleton</code> module needs to be included.</p>
+
+<p>Check out the code below:</p>
+
+<pre><code class="Ruby Singleton Example">class OpenSRSServer
+  include Singleton
+
+  def connection
+    @connection ||= OpenSRS::Server.new(
+      key:      ENV['OPENSRS_ACCESS_KEY'],
+      server:   ENV['OPENSRS_SERVER'],
+      username: ENV['OPENSRS_REG_USERNAME']
+    )
+  end
+end
+</code></pre>
+
+<p>The example above created a ruby singleton class called <code>OpensrsServer</code>, with an instance method called <code>connection</code>. This class is responsible for creating a connection object using <code>OpenSRS</code> gem.</p>
+
+<p>In order to instantiate an object with singleton class in Ruby, we need to use <code>.instance</code> method rather than <code>.new</code>.</p>
+
+<pre><code class="Ruby Singleton Object">server = OpenSRSSErver.instance
+</code></pre>
+
+<p>No matter how many time <code>OpenSRSServer.instance</code> get called, the object returned will be the same.</p>
+]]></content>
+  </entry>
+  
+</feed>
