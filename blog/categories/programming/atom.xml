@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Programming | Someth Victory]]></title>
   <link href="http://somethvictory.github.io/blog/categories/programming/atom.xml" rel="self"/>
   <link href="http://somethvictory.github.io/"/>
-  <updated>2015-07-04T10:38:19+07:00</updated>
+  <updated>2015-08-05T21:59:21+07:00</updated>
   <id>http://somethvictory.github.io/</id>
   <author>
     <name><![CDATA[Someth Victory]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Singleton Pattern in Ruby]]></title>
-    <link href="http://somethvictory.github.io/blog/2015/07/03/singleton-pattern-in-ruby/"/>
-    <updated>2015-07-03T21:51:12+07:00</updated>
-    <id>http://somethvictory.github.io/blog/2015/07/03/singleton-pattern-in-ruby</id>
+    <link href="http://somethvictory.github.io/blog/2015/08/01/singleton-pattern-in-ruby/"/>
+    <updated>2015-08-01T21:51:12+07:00</updated>
+    <id>http://somethvictory.github.io/blog/2015/08/01/singleton-pattern-in-ruby</id>
     <content type="html"><![CDATA[<p>Singleton Pattern is a design pattern that allow a class to be instantiated only
 once. The benefit of Singleton is to be ensure that there is only one and the same
 instance of object is called every time. Ruby also support Singleton Pattern.</p>
@@ -52,9 +52,9 @@ end
   
   <entry>
     <title type="html"><![CDATA[There Is No Ternary Syntax in CoffeeScript]]></title>
-    <link href="http://somethvictory.github.io/blog/2015/07/01/there-is-no-ternary-syntax-in-coffeescript/"/>
-    <updated>2015-07-01T22:01:56+07:00</updated>
-    <id>http://somethvictory.github.io/blog/2015/07/01/there-is-no-ternary-syntax-in-coffeescript</id>
+    <link href="http://somethvictory.github.io/blog/2015/07/15/there-is-no-ternary-syntax-in-coffeescript/"/>
+    <updated>2015-07-15T22:01:56+07:00</updated>
+    <id>http://somethvictory.github.io/blog/2015/07/15/there-is-no-ternary-syntax-in-coffeescript</id>
     <content type="html"><![CDATA[<p>Ternary operator in CoffeeScript is not behaving as you expected. There is no
 error, but your application will behave with unexpected behavior.</p>
 
@@ -83,9 +83,9 @@ the <code>name</code> variable has value.</p>
   
   <entry>
     <title type="html"><![CDATA[Data Transfer Object in Ruby]]></title>
-    <link href="http://somethvictory.github.io/blog/2015/06/24/data-transfer-object/"/>
-    <updated>2015-06-24T21:17:53+07:00</updated>
-    <id>http://somethvictory.github.io/blog/2015/06/24/data-transfer-object</id>
+    <link href="http://somethvictory.github.io/blog/2015/06/30/data-transfer-object/"/>
+    <updated>2015-06-30T21:17:53+07:00</updated>
+    <id>http://somethvictory.github.io/blog/2015/06/30/data-transfer-object</id>
     <content type="html"><![CDATA[<p>A Data Transfer Object(DTO) is an object which is used to encapsulate data. It
 is commonly used in the Services layer which request data from third party API, or from the system itself. The benefit of DTOs is to convert the raw data in
 an object and reduce unnecessary information. It also makes a great model in

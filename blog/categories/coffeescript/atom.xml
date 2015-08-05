@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Coffeescript | Someth Victory]]></title>
   <link href="http://somethvictory.github.io/blog/categories/coffeescript/atom.xml" rel="self"/>
   <link href="http://somethvictory.github.io/"/>
-  <updated>2015-07-04T10:38:19+07:00</updated>
+  <updated>2015-08-05T21:59:21+07:00</updated>
   <id>http://somethvictory.github.io/</id>
   <author>
     <name><![CDATA[Someth Victory]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[There Is No Ternary Syntax in CoffeeScript]]></title>
-    <link href="http://somethvictory.github.io/blog/2015/07/01/there-is-no-ternary-syntax-in-coffeescript/"/>
-    <updated>2015-07-01T22:01:56+07:00</updated>
-    <id>http://somethvictory.github.io/blog/2015/07/01/there-is-no-ternary-syntax-in-coffeescript</id>
+    <link href="http://somethvictory.github.io/blog/2015/07/15/there-is-no-ternary-syntax-in-coffeescript/"/>
+    <updated>2015-07-15T22:01:56+07:00</updated>
+    <id>http://somethvictory.github.io/blog/2015/07/15/there-is-no-ternary-syntax-in-coffeescript</id>
     <content type="html"><![CDATA[<p>Ternary operator in CoffeeScript is not behaving as you expected. There is no
 error, but your application will behave with unexpected behavior.</p>
 
