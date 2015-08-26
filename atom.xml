@@ -4,7 +4,7 @@
   <title><![CDATA[Someth Victory]]></title>
   <link href="http://somethvictory.github.io/atom.xml" rel="self"/>
   <link href="http://somethvictory.github.io/"/>
-  <updated>2015-08-08T10:25:37+07:00</updated>
+  <updated>2015-08-26T22:45:50+07:00</updated>
   <id>http://somethvictory.github.io/</id>
   <author>
     <name><![CDATA[Someth Victory]]></name>
@@ -12,6 +12,196 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Large Data Migration Tips]]></title>
+    <link href="http://somethvictory.github.io/blog/2015/08/25/large-data-migration-tips/"/>
+    <updated>2015-08-25T21:15:35+07:00</updated>
+    <id>http://somethvictory.github.io/blog/2015/08/25/large-data-migration-tips</id>
+    <content type="html"><![CDATA[<p><a href="http://guides.rubyonrails.org/active_record_migrations.html">Active Record Migration</a> is one of the greatest features in Rails. It actually
+help to reduce a very large and complicated amount of stuffs in development
+process. Most actions in migration such as <strong>creating table</strong>, <strong>add fields</strong>,
+<strong>remove fields</strong>, <strong>add index</strong>, <strong>remove index</strong> to existing table are simple
+and easy to do since the existing document in <a href="http://guides.rubyonrails.org/active_record_migrations.html">Rails Guides</a> is very
+straight forward.</p>
+
+<p>On the other hand, something like importing large amount of data, or moving data
+from one to another large table, migration become very complicated and panic.</p>
+
+<p>Given that we have 1 millions record of products in the database. And each product
+<code>belongs_to</code> one <code>global_category</code>.</p>
+
+<p>As developers, we want to change the relation <code>belongs_to :global_category</code> to be
+<code>has_many :categories</code> instead.</p>
+
+<p>If the existing product contains no global_category, then product categories
+should contain a category named <code>Uncategorized</code>.</p>
+
+<p>See example below:</p>
+
+<figure class='code'><figcaption><span>Example 1</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='Ruby'><span class='line'><span class="k">class</span> <span class="nc">MigrateProductCategories</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">up</span>
+</span><span class='line'>    <span class="no">Product</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">product</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">global_category</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">global_category</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">category</span> <span class="o">=</span> <span class="k">if</span> <span class="n">global_category</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>        <span class="n">product</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">find_or_create_by</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="n">global_category</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="n">product</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">find_or_create_by</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Uncategorized&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">product</span><span class="o">.</span><span class="n">categories</span> <span class="o">&lt;&lt;</span> <span class="n">category</span>
+</span><span class='line'>      <span class="n">product</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code looks fine and simple from the outside.</p>
+
+<p>It is actually not really fine, and good practice for large amount of data
+migration at all.</p>
+
+<p>The <code>Product.all.each</code>, will load all products from your database into the
+memory. Once you got 1 million record of products, you will be running out of
+memory and will cause and error.</p>
+
+<p>The suggestion is to use <code>Product.find_each</code> instead, which will load only 1000
+record continuously and will not consume too much memory.</p>
+
+<figure class='code'><figcaption><span>Example 2</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='Ruby'><span class='line'><span class="k">class</span> <span class="nc">MigrateProductCategories</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">up</span>
+</span><span class='line'>    <span class="no">Product</span><span class="o">.</span><span class="n">find_each</span> <span class="k">do</span> <span class="o">|</span><span class="n">product</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">global_category</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">global_category</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">category</span> <span class="o">=</span> <span class="k">if</span> <span class="n">global_category</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>        <span class="n">product</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">find_or_create_by</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="n">global_category</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="n">product</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">find_or_create_by</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Uncategorized&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">product</span><span class="o">.</span><span class="n">categories</span> <span class="o">&lt;&lt;</span> <span class="n">category</span>
+</span><span class='line'>      <span class="n">product</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, what will happen when there is expected errors happen? Actually, the
+program will crash and exit in the middle on the road. We don&rsquo;t know what cause
+the problem and where the problem might happen. So we have to update the
+exisitng migration code to be rerunable, and rerun the whole migration again.</p>
+
+<p>This is not an ideal solution at all. We can&rsquo;t make sure that the new updated
+code won&rsquo;t cause any other problems.</p>
+
+<p>The suggestion for this is to find out any products that cause the problem
+during migration process, and store those products some where for later debug.
+Then recue from any error happen on running time and continue the working until
+all data are migrated.</p>
+
+<p>See the refactorred example below:</p>
+
+<figure class='code'><figcaption><span>Example 3</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='Ruby'><span class='line'><span class="k">class</span> <span class="nc">MigrateProductCategories</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">up</span>
+</span><span class='line'>    <span class="n">unprocessable_products</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;=============Processing=============&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="no">Product</span><span class="o">.</span><span class="n">find_each</span> <span class="k">do</span> <span class="o">|</span><span class="n">product</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">global_category</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">global_category</span>
+</span><span class='line'>      <span class="k">begin</span>
+</span><span class='line'>        <span class="n">category</span> <span class="o">=</span> <span class="k">if</span> <span class="n">global_category</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>          <span class="n">product</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">find_or_create_by</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="n">global_category</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>          <span class="n">product</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">find_or_create_by</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Uncategorized&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="n">product</span><span class="o">.</span><span class="n">categories</span> <span class="o">&lt;&lt;</span> <span class="n">category</span>
+</span><span class='line'>        <span class="n">product</span><span class="o">.</span><span class="n">save!</span>
+</span><span class='line'>      <span class="k">rescue</span>
+</span><span class='line'>        <span class="n">unprocessable_products</span> <span class="o">&lt;&lt;</span> <span class="n">product</span><span class="o">.</span><span class="n">id</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;=============Done=============&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">system</span> <span class="s2">&quot;echo </span><span class="si">#{</span><span class="n">unprocessable_products</span><span class="si">}</span><span class="s2"> &gt;&gt; error.txt&quot;</span> <span class="k">if</span> <span class="n">unprocessable_products</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From the example above, all exceptions raised will be rescued with the code in the
+rescue block which will push any error products into the <code>unprocessable_products</code> that will be writted into the <code>error.txt</code> file, and the migration still continue to run for the rest of the records.</p>
+
+<p>Once the migration is finished, you just need to check in the <code>error.txt</code> file
+which will list all the error product ids. With the ids in hand, you could now
+debug your code easily. Anyway, if you couldn&rsquo;t find the <code>error.txt</code> file, it
+means there is no error at all, yeee.</p>
+
+<p>Hope this help! Happy migrating!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Leaving Yoolk Inc.]]></title>
@@ -32,14 +222,7 @@ very ground floor position. I did learn a lot while working there. People at Yoo
 only provided me chances to improve my skills, but gave me very good time to
 enjoy as well. They are not only colleagues, but good friends as well. Really thanks you guys!</p>
 
-<p>Today is my last day at Yoolk. My feeling is very tough inside. Yoolkers just
-celebrate my birthday today without letting me know in advance while it&rsquo;s 2 days
-late from my real birth date which is surprised me very much. Imaging when
-everyone coming to you, shaking your hand, saying &lsquo;Happy
-Birthday to you&rsquo; and &lsquo;Goodbye!&rsquo; at the same time. What I could do is just to
-smile back to them while my feeling was very tense inside. I could see their
-sadness just as mine as well. I&rsquo;m sorry guys to bring this feeling to you
-all :(</p>
+<p>My feeling is very tough inside actually. Yoolkers just celebrate my birthday today without letting me know in advance while it&rsquo;s 2 days late from my real birth date which is surprised me very much. Imaging when everyone coming to you, shaking your hand, saying &lsquo;Happy Birthday to you&rsquo; and &lsquo;Goodbye!&rsquo; at the same time. What I could do is just to smile back to them while my feeling was very tense inside. I could see their sadness just as mine as well. I&rsquo;m sorry guys to bring this feeling to you all :(</p>
 
 <p>Actually, leaving Yoolk is the hardest decision I have ever made. It is the most
 frustrated time I would say, maybe because Yoolk is my first company
@@ -110,7 +293,7 @@ error, but your application will behave with unexpected behavior.</p>
 <p>See example below:</p>
 
 <figure class='code'><figcaption><span>Example 1</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nv">noNameSet = </span><span class="nx">name</span> <span class="o">?</span> <span class="kc">false</span> <span class="o">:</span> <span class="kc">true</span>
+</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nv">hasName = </span><span class="nx">name</span> <span class="o">?</span> <span class="kc">false</span> <span class="o">:</span> <span class="kc">true</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -125,11 +308,11 @@ variable stores value of &lsquo;Victory&rsquo;, then the <code>hasName</code> wi
 like ternary operator in pure Javascript.</p>
 
 <figure class='code'><figcaption><span>Example 2</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nv">noNameSet = </span><span class="k">if</span> <span class="nx">name</span> <span class="k">then</span> <span class="kc">true</span> <span class="k">else</span> <span class="kc">false</span>
+</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nv">hasName = </span><span class="k">if</span> <span class="nx">name</span> <span class="k">then</span> <span class="kc">true</span> <span class="k">else</span> <span class="kc">false</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Now, <code>noNameSet</code> variable will return <code>false</code> or <code>true</code> base on whether or not
+<p>Now, <code>hasName</code> variable will return <code>false</code> or <code>true</code> base on whether or not
 the <code>name</code> variable has value.</p>
 ]]></content>
   </entry>

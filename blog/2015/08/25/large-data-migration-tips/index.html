@@ -1,0 +1,385 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Large Data Migration Tips - Someth Victory</title>
+  <meta name="author" content="Someth Victory">
+
+  
+  <meta name="description" content="Active Record Migration is one of the greatest features in Rails. It actually
+help to reduce a very large and complicated amount of stuffs in &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://somethvictory.github.io/blog/2015/08/25/large-data-migration-tips/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Someth Victory" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Someth Victory</a></h1>
+  
+    <h2>Ruby, Rails, and Javascript Developer</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="somethvictory.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Large Data Migration Tips</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-08-25T21:15:35+07:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:15 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="http://guides.rubyonrails.org/active_record_migrations.html">Active Record Migration</a> is one of the greatest features in Rails. It actually
+help to reduce a very large and complicated amount of stuffs in development
+process. Most actions in migration such as <strong>creating table</strong>, <strong>add fields</strong>,
+<strong>remove fields</strong>, <strong>add index</strong>, <strong>remove index</strong> to existing table are simple
+and easy to do since the existing document in <a href="http://guides.rubyonrails.org/active_record_migrations.html">Rails Guides</a> is very
+straight forward.</p>
+
+<p>On the other hand, something like importing large amount of data, or moving data
+from one to another large table, migration become very complicated and panic.</p>
+
+<p>Given that we have 1 millions record of products in the database. And each product
+<code>belongs_to</code> one <code>global_category</code>.</p>
+
+<p>As developers, we want to change the relation <code>belongs_to :global_category</code> to be
+<code>has_many :categories</code> instead.</p>
+
+<p>If the existing product contains no global_category, then product categories
+should contain a category named <code>Uncategorized</code>.</p>
+
+<p>See example below:</p>
+
+<figure class='code'><figcaption><span>Example 1</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='Ruby'><span class='line'><span class="k">class</span> <span class="nc">MigrateProductCategories</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">up</span>
+</span><span class='line'>    <span class="no">Product</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">product</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">global_category</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">global_category</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">category</span> <span class="o">=</span> <span class="k">if</span> <span class="n">global_category</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>        <span class="n">product</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">find_or_create_by</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="n">global_category</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="n">product</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">find_or_create_by</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Uncategorized&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">product</span><span class="o">.</span><span class="n">categories</span> <span class="o">&lt;&lt;</span> <span class="n">category</span>
+</span><span class='line'>      <span class="n">product</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code looks fine and simple from the outside.</p>
+
+<p>It is actually not really fine, and good practice for large amount of data
+migration at all.</p>
+
+<p>The <code>Product.all.each</code>, will load all products from your database into the
+memory. Once you got 1 million record of products, you will be running out of
+memory and will cause and error.</p>
+
+<p>The suggestion is to use <code>Product.find_each</code> instead, which will load only 1000
+record continuously and will not consume too much memory.</p>
+
+<figure class='code'><figcaption><span>Example 2</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='Ruby'><span class='line'><span class="k">class</span> <span class="nc">MigrateProductCategories</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">up</span>
+</span><span class='line'>    <span class="no">Product</span><span class="o">.</span><span class="n">find_each</span> <span class="k">do</span> <span class="o">|</span><span class="n">product</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">global_category</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">global_category</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">category</span> <span class="o">=</span> <span class="k">if</span> <span class="n">global_category</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>        <span class="n">product</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">find_or_create_by</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="n">global_category</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="n">product</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">find_or_create_by</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Uncategorized&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">product</span><span class="o">.</span><span class="n">categories</span> <span class="o">&lt;&lt;</span> <span class="n">category</span>
+</span><span class='line'>      <span class="n">product</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, what will happen when there is expected errors happen? Actually, the
+program will crash and exit in the middle on the road. We don&rsquo;t know what cause
+the problem and where the problem might happen. So we have to update the
+exisitng migration code to be rerunable, and rerun the whole migration again.</p>
+
+<p>This is not an ideal solution at all. We can&rsquo;t make sure that the new updated
+code won&rsquo;t cause any other problems.</p>
+
+<p>The suggestion for this is to find out any products that cause the problem
+during migration process, and store those products some where for later debug.
+Then recue from any error happen on running time and continue the working until
+all data are migrated.</p>
+
+<p>See the refactorred example below:</p>
+
+<figure class='code'><figcaption><span>Example 3</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='Ruby'><span class='line'><span class="k">class</span> <span class="nc">MigrateProductCategories</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">up</span>
+</span><span class='line'>    <span class="n">unprocessable_products</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;=============Processing=============&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="no">Product</span><span class="o">.</span><span class="n">find_each</span> <span class="k">do</span> <span class="o">|</span><span class="n">product</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">global_category</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">global_category</span>
+</span><span class='line'>      <span class="k">begin</span>
+</span><span class='line'>        <span class="n">category</span> <span class="o">=</span> <span class="k">if</span> <span class="n">global_category</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>          <span class="n">product</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">find_or_create_by</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="n">global_category</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>          <span class="n">product</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">find_or_create_by</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Uncategorized&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="n">product</span><span class="o">.</span><span class="n">categories</span> <span class="o">&lt;&lt;</span> <span class="n">category</span>
+</span><span class='line'>        <span class="n">product</span><span class="o">.</span><span class="n">save!</span>
+</span><span class='line'>      <span class="k">rescue</span>
+</span><span class='line'>        <span class="n">unprocessable_products</span> <span class="o">&lt;&lt;</span> <span class="n">product</span><span class="o">.</span><span class="n">id</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;=============Done=============&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">system</span> <span class="s2">&quot;echo </span><span class="si">#{</span><span class="n">unprocessable_products</span><span class="si">}</span><span class="s2"> &gt;&gt; error.txt&quot;</span> <span class="k">if</span> <span class="n">unprocessable_products</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From the example above, all exceptions raised will be rescued with the code in the
+rescue block which will push any error products into the <code>unprocessable_products</code> that will be writted into the <code>error.txt</code> file, and the migration still continue to run for the rest of the records.</p>
+
+<p>Once the migration is finished, you just need to check in the <code>error.txt</code> file
+which will list all the error product ids. With the ids in hand, you could now
+debug your code easily. Anyway, if you couldn&rsquo;t find the <code>error.txt</code> file, it
+means there is no error at all, yeee.</p>
+
+<p>Hope this help! Happy migrating!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Someth Victory</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-08-25T21:15:35+07:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:15 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/best-practice/'>best practice</a>, <a class='category' href='/blog/categories/migration/'>migration</a>, <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://somethvictory.github.io/blog/2015/08/25/large-data-migration-tips/" data-via="" data-counturl="http://somethvictory.github.io/blog/2015/08/25/large-data-migration-tips/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/08/10/leaving-yoolk-inc/" title="Previous Post: Leaving Yoolk Inc.">&laquo; Leaving Yoolk Inc.</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/08/25/large-data-migration-tips/">Large Data Migration Tips</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/10/leaving-yoolk-inc/">Leaving Yoolk Inc.</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/01/singleton-pattern-in-ruby/">Singleton Pattern in Ruby</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/15/there-is-no-ternary-syntax-in-coffeescript/">There Is No Ternary Syntax in CoffeeScript</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/30/data-transfer-object/">Data Transfer Object in Ruby</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Someth Victory -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

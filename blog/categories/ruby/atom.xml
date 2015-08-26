@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ruby | Someth Victory]]></title>
   <link href="http://somethvictory.github.io/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://somethvictory.github.io/"/>
-  <updated>2015-08-08T10:25:37+07:00</updated>
+  <updated>2015-08-26T22:45:50+07:00</updated>
   <id>http://somethvictory.github.io/</id>
   <author>
     <name><![CDATA[Someth Victory]]></name>
@@ -12,6 +12,135 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Large Data Migration Tips]]></title>
+    <link href="http://somethvictory.github.io/blog/2015/08/25/large-data-migration-tips/"/>
+    <updated>2015-08-25T21:15:35+07:00</updated>
+    <id>http://somethvictory.github.io/blog/2015/08/25/large-data-migration-tips</id>
+    <content type="html"><![CDATA[<p><a href="http://guides.rubyonrails.org/active_record_migrations.html">Active Record Migration</a> is one of the greatest features in Rails. It actually
+help to reduce a very large and complicated amount of stuffs in development
+process. Most actions in migration such as <strong>creating table</strong>, <strong>add fields</strong>,
+<strong>remove fields</strong>, <strong>add index</strong>, <strong>remove index</strong> to existing table are simple
+and easy to do since the existing document in <a href="http://guides.rubyonrails.org/active_record_migrations.html">Rails Guides</a> is very
+straight forward.</p>
+
+<p>On the other hand, something like importing large amount of data, or moving data
+from one to another large table, migration become very complicated and panic.</p>
+
+<p>Given that we have 1 millions record of products in the database. And each product
+<code>belongs_to</code> one <code>global_category</code>.</p>
+
+<p>As developers, we want to change the relation <code>belongs_to :global_category</code> to be
+<code>has_many :categories</code> instead.</p>
+
+<p>If the existing product contains no global_category, then product categories
+should contain a category named <code>Uncategorized</code>.</p>
+
+<p>See example below:</p>
+
+<pre><code class="Ruby Example 1">class MigrateProductCategories &lt; ActiveRecord::Migration
+  def up
+    Product.all.each do |product|
+      global_category = product.global_category
+
+      category = if global_category.present?
+        product.categories.find_or_create_by(name: global_category.name)
+      else
+        product.categories.find_or_create_by(name: 'Uncategorized')
+      end
+
+      product.categories &lt;&lt; category
+      product.save
+    end
+  end
+end
+</code></pre>
+
+<p>The code looks fine and simple from the outside.</p>
+
+<p>It is actually not really fine, and good practice for large amount of data
+migration at all.</p>
+
+<p>The <code>Product.all.each</code>, will load all products from your database into the
+memory. Once you got 1 million record of products, you will be running out of
+memory and will cause and error.</p>
+
+<p>The suggestion is to use <code>Product.find_each</code> instead, which will load only 1000
+record continuously and will not consume too much memory.</p>
+
+<pre><code class="Ruby Example 2">class MigrateProductCategories &lt; ActiveRecord::Migration
+  def up
+    Product.find_each do |product|
+      global_category = product.global_category
+
+      category = if global_category.present?
+        product.categories.find_or_create_by(name: global_category.name)
+      else
+        product.categories.find_or_create_by(name: 'Uncategorized')
+      end
+
+      product.categories &lt;&lt; category
+      product.save
+    end
+  end
+end
+</code></pre>
+
+<p>Next, what will happen when there is expected errors happen? Actually, the
+program will crash and exit in the middle on the road. We don&rsquo;t know what cause
+the problem and where the problem might happen. So we have to update the
+exisitng migration code to be rerunable, and rerun the whole migration again.</p>
+
+<p>This is not an ideal solution at all. We can&rsquo;t make sure that the new updated
+code won&rsquo;t cause any other problems.</p>
+
+<p>The suggestion for this is to find out any products that cause the problem
+during migration process, and store those products some where for later debug.
+Then recue from any error happen on running time and continue the working until
+all data are migrated.</p>
+
+<p>See the refactorred example below:</p>
+
+<pre><code class="Ruby Example 3">class MigrateProductCategories &lt; ActiveRecord::Migration
+  def up
+    unprocessable_products = []
+
+    puts "=============Processing============="
+
+    Product.find_each do |product|
+      global_category = product.global_category
+      begin
+        category = if global_category.present?
+          product.categories.find_or_create_by(name: global_category.name)
+        else
+          product.categories.find_or_create_by(name: 'Uncategorized')
+        end
+        product.categories &lt;&lt; category
+        product.save!
+      rescue
+        unprocessable_products &lt;&lt; product.id
+      end
+    end
+
+    puts "=============Done============="
+
+    system "echo #{unprocessable_products} &gt;&gt; error.txt" if unprocessable_products.present?
+  end
+end
+</code></pre>
+
+<p>From the example above, all exceptions raised will be rescued with the code in the
+rescue block which will push any error products into the <code>unprocessable_products</code> that will be writted into the <code>error.txt</code> file, and the migration still continue to run for the rest of the records.</p>
+
+<p>Once the migration is finished, you just need to check in the <code>error.txt</code> file
+which will list all the error product ids. With the ids in hand, you could now
+debug your code easily. Anyway, if you couldn&rsquo;t find the <code>error.txt</code> file, it
+means there is no error at all, yeee.</p>
+
+<p>Hope this help! Happy migrating!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Singleton Pattern in Ruby]]></title>

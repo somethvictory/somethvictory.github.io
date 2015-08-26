@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Programming | Someth Victory]]></title>
   <link href="http://somethvictory.github.io/blog/categories/programming/atom.xml" rel="self"/>
   <link href="http://somethvictory.github.io/"/>
-  <updated>2015-08-08T10:25:37+07:00</updated>
+  <updated>2015-08-26T22:45:50+07:00</updated>
   <id>http://somethvictory.github.io/</id>
   <author>
     <name><![CDATA[Someth Victory]]></name>
@@ -60,7 +60,7 @@ error, but your application will behave with unexpected behavior.</p>
 
 <p>See example below:</p>
 
-<pre><code class="coffeescript Example 1">noNameSet = name ? false : true
+<pre><code class="coffeescript Example 1">hasName = name ? false : true
 </code></pre>
 
 <p>The <code>hasName</code> variable should return <code>false</code> or <code>true</code> base on whether or not
@@ -73,10 +73,10 @@ variable stores value of &lsquo;Victory&rsquo;, then the <code>hasName</code> wi
 <p>Fortunately, CoffeeScript has a very nice one line syntax which behaves exactly
 like ternary operator in pure Javascript.</p>
 
-<pre><code class="coffeescript Example 2">noNameSet = if name then true else false
+<pre><code class="coffeescript Example 2">hasName = if name then true else false
 </code></pre>
 
-<p>Now, <code>noNameSet</code> variable will return <code>false</code> or <code>true</code> base on whether or not
+<p>Now, <code>hasName</code> variable will return <code>false</code> or <code>true</code> base on whether or not
 the <code>name</code> variable has value.</p>
 ]]></content>
   </entry>
